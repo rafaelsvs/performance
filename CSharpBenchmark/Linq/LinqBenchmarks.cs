@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 
 namespace CSharpBenchmark.Linq
 {
@@ -9,159 +11,222 @@ namespace CSharpBenchmark.Linq
     [BenchmarkCategory(Categories.Linq)]
     public class LinqBenchmarks
     {
-        public const int IterationsWhere1 = 2000000;
-        public const int IterationsWhere2 = 2000000;
-        public const int IterationsCount1 = 2000000;
-        public const int IterationsOrder2 = 2000000;
-
         #region Where 1
 
         [Benchmark]
-        public bool Where1LinqQueryX()
+        public List<Proposal> Where1LinqQueryX()
         {
-            List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = null;
-            int count = 0;
-
-            for (int i = 0; i < IterationsWhere1; i++)
-            {
-                result =
-                    (from proposal in proposals
-                     where proposal.InsuranceId == 1
+            return (from proposal in ProposalBuilder.GetInsurances()
+                    where proposal.InsuranceId == 1
                      select proposal).ToList();
-
-                foreach (var r in result)
-                {
-                    count++;
-                }
-            }
-
-            return count == 20 * IterationsWhere1;
         }
 
         [Benchmark]
-        public bool Where1LinqLambdaX()
+        public List<Proposal> Where1LinqLambdaX()
         {
-            List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = null;
-            int count = 0;
-
-            for (int i = 0; i < IterationsWhere1; i++)
-            {
-                result = proposals.Where(p => p.InsuranceId == 1).ToList();
-
-                foreach (var r in result)
-                {
-                    count++;
-                }
-            }
-
-            return count == 20 * IterationsWhere1;
+            return ProposalBuilder
+                .GetInsurances()
+                .Where(p => p.InsuranceId == 1)
+                .ToList();
         }
 
         [Benchmark]
-        public bool Where1LinqForX()
+        public List<Proposal> Where1LinqForeachX()
         {
             List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = null;
-            int count = 0;
+            List<Proposal> result = new List<Proposal>();
 
-            for (int i = 0; i < IterationsWhere1; i++)
+            foreach (Proposal p in proposals)
             {
-                result = new List<Proposal>();
-
-                foreach (Proposal p in proposals)
+                if (p.InsuranceId == 1)
                 {
-                    if (p.InsuranceId == 1)
-                    {
-                        result.Add(p);
-                    }
-                }
-
-                foreach (var r in result)
-                {
-                    count++;
+                    result.Add(p);
                 }
             }
-
-            return count == 20 * IterationsWhere1;
+            return result;
         }
+
+        [Benchmark]
+        public List<Proposal> Where1LinqForX()
+        {
+            List<Proposal> proposals = ProposalBuilder.GetInsurances();
+            List<Proposal> result = new List<Proposal>();
+            for (int i = 0; i < proposals.Count; i++)
+            {
+                Proposal p = proposals[i];
+                if (p.InsuranceId == 1)
+                    result.Add(p);
+            }
+            return result;
+        }
+
+        [Benchmark]
+        public List<ReadOnlyProposal> Where1LinqForeachSortedX()
+        {
+            List<ReadOnlyProposal> proposals = ProposalBuilder.GetSortedInsurances();
+            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
+
+            foreach (ReadOnlyProposal p in proposals)
+            {
+                if (p.InsuranceId == 1)
+                    result.Add(p);
+                else if (p.InsuranceId > 1)
+                    break;
+            }
+            return result;
+        }
+
+        [Benchmark]
+        public List<ReadOnlyProposal> Where1LinqKeyedX()
+        {
+            Dictionary<int, List<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
+            return proposals[1];
+        }
+
+        [Benchmark]
+        public List<ReadOnlyProposal> Where1LinqPositionalX()
+        {
+            List<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
+            
+            return proposals[1];
+        }
+
 
         #endregion
 
         #region Where 2
 
         [Benchmark]
-        public bool Where2LinqQueryX()
+        public List<Proposal> Where2LinqQueryX()
         {
-            List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = null;
-            int count = 0;
-
-            for (int i = 0; i < IterationsWhere2; i++)
-            {
-                result =
-                    (from proposal in proposals
-                     where proposal.InsuranceId == 1 && proposal.NetPremium > 20000M
-                     select proposal).ToList();
-
-                foreach (var r in result)
-                {
-                    count++;
-                }
-            }
-
-            return count == 18 * IterationsWhere2;
+            return (from proposal in ProposalBuilder.GetInsurances()
+                    where proposal.InsuranceId == 1 && proposal.NetPremium > 20000M
+                    select proposal)
+                    .ToList();
         }
 
         [Benchmark]
-        public bool Where2LinqLambdaX()
+        public List<Proposal> Where2LinqLambdaX()
         {
-            List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = null;
-            int count = 0;
-
-            for (int i = 0; i < IterationsWhere2; i++)
-            {
-                result = proposals.Where(p => p.InsuranceId == 1 && p.NetPremium > 20000M).ToList();
-
-                foreach (var r in result)
-                {
-                    count++;
-                }
-            }
-
-            return count == 18 * IterationsWhere2;
+            return ProposalBuilder.GetInsurances()
+                .Where(p => p.InsuranceId == 1 && p.NetPremium > 20000M)
+                .ToList();
         }
 
         [Benchmark]
-        public bool Where2LinqForX()
+        public List<Proposal> Where2LinqForeachX()
+        {
+            List<Proposal> result = new List<Proposal>();
+
+            foreach (Proposal p in ProposalBuilder.GetInsurances())
+            {
+                if (p.InsuranceId == 1 && p.NetPremium > 20000M)
+                    result.Add(p);
+            }
+            return result;
+        }
+
+        [Benchmark]
+        public List<Proposal> Where2LinqForX()
         {
             List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = null;
-            int count = 0;
+            List<Proposal> result = new List<Proposal>();
 
-            for (int i = 0; i < IterationsWhere2; i++)
+            for (int i = 0; i < proposals.Count; i++)
             {
-                result = new List<Proposal>();
+                Proposal p = proposals[i];
+                if (p.InsuranceId == 1 && p.NetPremium > 20000M)
+                    result.Add(p);
+            }
+            return result;
+        }
 
-                foreach (Proposal p in proposals)
+        [Benchmark]
+        public List<ReadOnlyProposal> Where2LinqForeachSortedX()
+        {
+            List<ReadOnlyProposal> proposals = ProposalBuilder.GetSortedInsurances();
+            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
+
+            foreach (ReadOnlyProposal p in proposals)
+            {
+                if (p.InsuranceId == 1)
                 {
-                    if (p.InsuranceId == 1 && p.NetPremium > 20000M)
-                    {
+                    if (p.NetPremium > 20000M)
                         result.Add(p);
+                }
+                else if (p.InsuranceId > 1)
+                    break;
+            }
+            return result;
+        }
+        
+        [Benchmark]
+        public List<ReadOnlyProposal> Where2LinqKeyedSortedX()
+        {
+            Dictionary<int, List<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
+            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
+
+            foreach (ReadOnlyProposal p in proposals[1])
+            {
+                if (p.NetPremium > 20000M)
+                    result.Add(p);
+                else
+                    break;
+            }
+
+            return result;
+        }
+
+        [Benchmark]
+        public List<ReadOnlyProposal> Where2LinqPositionalSortedX()
+        {
+            List<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
+            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
+
+            foreach (ReadOnlyProposal p in proposals[1])
+            {
+                if (p.NetPremium > 20000M)
+                    result.Add(p);
+                else
+                    break;
+            }
+
+            return result;
+        }
+        [Benchmark]
+        public unsafe ReadOnlyProposal[] Where2LinqPositionalSortedVectorizedX()
+        {
+            ProposalResult[] proposals = ProposalBuilder.GetPositionalSortedVectorizedInsurances();
+            ProposalResult p = proposals[1];
+
+            var minPremium = Vector256.Create(decimal.ToOACurrency(20000M));
+            fixed (long* npp = p.NetPremiums)
+            {
+                long* offset = npp;
+                long* endBlock = npp + p.NetPremiums.Length - Vector256<long>.Count + 1;
+                for (; offset <= endBlock; offset += Vector256<long>.Count)
+                {
+                    int mask = (int)Lzcnt.LeadingZeroCount(
+                        (uint)Avx2.MoveMask(
+                            Vector256.AsByte(
+                                Avx2.CompareGreaterThan(
+                                    Avx2.LoadVector256(offset),
+                                    minPremium
+                                 )
+                            )
+                        )
+                    ) >> 3;
+                    if (mask != 0)
+                    {
+                        int length = (int)(offset - npp) + Vector256<long>.Count - mask;
+                        return p.Proposals
+                            .AsSpan(0, length)
+                            .ToArray();
                     }
                 }
-
-                foreach (var r in result)
-                {
-                    count++;
-                }
             }
-
-            return count == 18 * IterationsWhere2;
+            return p.Proposals;
         }
-
         #endregion
     }
 }
