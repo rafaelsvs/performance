@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -9,8 +10,8 @@ namespace CSharpBenchmark.Linq
     {
         private static Lazy<List<Proposal>> proposals = new Lazy<List<Proposal>>(CreateProposal);
         private static Lazy<List<ReadOnlyProposal>> sortedProposals = new Lazy<List<ReadOnlyProposal>>(CreateSortedProposal);
-        private static Lazy<Dictionary<int, List<ReadOnlyProposal>>> keyedSortedProposals = new Lazy<Dictionary<int, List<ReadOnlyProposal>>>(CreateKeyedSortedProposal);
-        private static Lazy<List<ReadOnlyProposal>[]> positionalSortedProposals = new Lazy<List<ReadOnlyProposal>[]>(CreatePositionalSortedProposal);
+        private static Lazy<Dictionary<int, ImmutableArray<ReadOnlyProposal>>> keyedSortedProposals = new Lazy<Dictionary<int, ImmutableArray<ReadOnlyProposal>>>(CreateKeyedSortedProposal);
+        private static Lazy<ImmutableArray<ReadOnlyProposal>[]> positionalSortedProposals = new Lazy<ImmutableArray<ReadOnlyProposal>[]>(CreatePositionalSortedProposal);
         private static Lazy<ProposalResult[]> positionalSortedVectorizedProposals = new Lazy<ProposalResult[]>(CreatePositionalSortedVectorizedProposal);
 
         private static List<Proposal> CreateProposal()
@@ -142,25 +143,25 @@ namespace CSharpBenchmark.Linq
                 .OrderBy(p => p.InsuranceId)
                 .ToList();
         }
-        private static Dictionary<int, List<ReadOnlyProposal>> CreateKeyedSortedProposal()
+        private static Dictionary<int, ImmutableArray<ReadOnlyProposal>> CreateKeyedSortedProposal()
         {
             return CreateProposal()
                 .Select(p => new ReadOnlyProposal(p))
                 .GroupBy(p => p.InsuranceId)
                 .ToDictionary(
                     p => p.Key,
-                    p => p.OrderByDescending(p => p.NetPremium).ToList());
+                    p => ImmutableArray.CreateRange(p.OrderByDescending(p => p.NetPremium).ToList()));
         }
-        private static List<ReadOnlyProposal>[] CreatePositionalSortedProposal()
+        private static ImmutableArray<ReadOnlyProposal>[] CreatePositionalSortedProposal()
         {
             var grouped = CreateProposal()
                 .Select(p => new ReadOnlyProposal(p))
                 .GroupBy(p => p.InsuranceId)
                 .ToList();
             ;
-            List<ReadOnlyProposal>[] result = new List<ReadOnlyProposal>[grouped.Max(p => p.Key) + 1];
+            ImmutableArray<ReadOnlyProposal>[] result = new ImmutableArray<ReadOnlyProposal>[grouped.Max(p => p.Key) + 1];
             foreach (var p in grouped)
-                result[p.Key] = p.OrderByDescending(ps => ps.NetPremium).ToList();
+                result[p.Key] = ImmutableArray.CreateRange(p.OrderByDescending(ps => ps.NetPremium).ToList());
 
             return result;
         }
@@ -180,8 +181,8 @@ namespace CSharpBenchmark.Linq
 
         public static List<Proposal> GetInsurances() => proposals.Value;
         public static List<ReadOnlyProposal> GetSortedInsurances() => sortedProposals.Value;
-        public static Dictionary<int, List<ReadOnlyProposal>> GetKeyedSortedInsurances() => keyedSortedProposals.Value;
-        public static List<ReadOnlyProposal>[] GetPositionalSortedInsurances() => positionalSortedProposals.Value;
+        public static Dictionary<int, ImmutableArray<ReadOnlyProposal>> GetKeyedSortedInsurances() => keyedSortedProposals.Value;
+        public static ImmutableArray<ReadOnlyProposal>[] GetPositionalSortedInsurances() => positionalSortedProposals.Value;
         public static ProposalResult[] GetPositionalSortedVectorizedInsurances() => positionalSortedVectorizedProposals.Value;
     }
 }

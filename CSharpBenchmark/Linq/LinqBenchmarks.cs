@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -61,6 +62,37 @@ namespace CSharpBenchmark.Linq
         }
 
         [Benchmark]
+        public List<Proposal> Where1LinqUnrolledForX()
+        {
+            List<Proposal> proposals = ProposalBuilder.GetInsurances();
+            List<Proposal> result = new List<Proposal>();
+            int i = 0;
+            for (; i <= proposals.Count - 4; i += 4)
+            {
+                Proposal p0 = proposals[i];
+                Proposal p1 = proposals[i + 1];
+                Proposal p2 = proposals[i + 2];
+                Proposal p3 = proposals[i + 3];
+                if (p0.InsuranceId == 1)
+                    result.Add(p0);
+                if (p1.InsuranceId == 1)
+                    result.Add(p1);
+                if (p2.InsuranceId == 1)
+                    result.Add(p2);
+                if (p3.InsuranceId == 1)
+                    result.Add(p3);
+            }
+            for (; i < proposals.Count; i++)
+            {
+                Proposal p = proposals[i];
+                if (p.InsuranceId == 1)
+                    result.Add(p);
+            }
+
+            return result;
+        }
+
+        [Benchmark]
         public List<ReadOnlyProposal> Where1LinqForeachSortedX()
         {
             List<ReadOnlyProposal> proposals = ProposalBuilder.GetSortedInsurances();
@@ -77,16 +109,16 @@ namespace CSharpBenchmark.Linq
         }
 
         [Benchmark]
-        public List<ReadOnlyProposal> Where1LinqKeyedX()
+        public ImmutableArray<ReadOnlyProposal> Where1LinqKeyedX()
         {
-            Dictionary<int, List<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
+            Dictionary<int, ImmutableArray<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
             return proposals[1];
         }
 
         [Benchmark]
-        public List<ReadOnlyProposal> Where1LinqPositionalX()
+        public ImmutableArray<ReadOnlyProposal> Where1LinqPositionalX()
         {
-            List<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
+            ImmutableArray<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
             
             return proposals[1];
         }
@@ -163,7 +195,7 @@ namespace CSharpBenchmark.Linq
         [Benchmark]
         public List<ReadOnlyProposal> Where2LinqKeyedSortedX()
         {
-            Dictionary<int, List<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
+            Dictionary<int, ImmutableArray<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
             List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
 
             foreach (ReadOnlyProposal p in proposals[1])
@@ -180,7 +212,7 @@ namespace CSharpBenchmark.Linq
         [Benchmark]
         public List<ReadOnlyProposal> Where2LinqPositionalSortedX()
         {
-            List<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
+            ImmutableArray<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
             List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
 
             foreach (ReadOnlyProposal p in proposals[1])
