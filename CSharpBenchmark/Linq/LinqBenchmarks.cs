@@ -123,7 +123,6 @@ namespace CSharpBenchmark.Linq
             return proposals[1];
         }
 
-
         #endregion
 
         #region Where 2
@@ -174,13 +173,14 @@ namespace CSharpBenchmark.Linq
         }
 
         [Benchmark]
-        public List<ReadOnlyProposal> Where2LinqForeachSortedX()
+        public List<ReadOnlyProposal> Where2LinqForSortedX()
         {
             List<ReadOnlyProposal> proposals = ProposalBuilder.GetSortedInsurances();
             List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
 
-            foreach (ReadOnlyProposal p in proposals)
+            for (int i = 0; i < proposals.Count; i++)
             {
+                ReadOnlyProposal p = proposals[i];
                 if (p.InsuranceId == 1)
                 {
                     if (p.NetPremium > 20000M)
@@ -191,15 +191,17 @@ namespace CSharpBenchmark.Linq
             }
             return result;
         }
-        
+
         [Benchmark]
         public List<ReadOnlyProposal> Where2LinqKeyedSortedX()
         {
-            Dictionary<int, ImmutableArray<ReadOnlyProposal>> proposals = ProposalBuilder.GetKeyedSortedInsurances();
+            Dictionary<int, ImmutableArray<ReadOnlyProposal>> proposalsByKey = ProposalBuilder.GetKeyedSortedInsurances();
             List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
 
-            foreach (ReadOnlyProposal p in proposals[1])
+            var proposals = proposalsByKey[1];
+            for (int i = 0; i < proposals.Length; i++)
             {
+                ReadOnlyProposal p = proposals[i];
                 if (p.NetPremium > 20000M)
                     result.Add(p);
                 else
@@ -212,11 +214,13 @@ namespace CSharpBenchmark.Linq
         [Benchmark]
         public List<ReadOnlyProposal> Where2LinqPositionalSortedX()
         {
-            ImmutableArray<ReadOnlyProposal>[] proposals = ProposalBuilder.GetPositionalSortedInsurances();
+            ImmutableArray<ReadOnlyProposal>[] proposalsByPosition = ProposalBuilder.GetPositionalSortedInsurances();
             List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
 
-            foreach (ReadOnlyProposal p in proposals[1])
+            var proposals = proposalsByPosition[1];
+            for (int i = 0; i < proposals.Length; i++)
             {
+                ReadOnlyProposal p = proposals[i];
                 if (p.NetPremium > 20000M)
                     result.Add(p);
                 else

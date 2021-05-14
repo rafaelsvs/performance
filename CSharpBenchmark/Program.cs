@@ -14,10 +14,10 @@ namespace CSharpBenchmark
         {
 #if !DEBUG
             BenchmarkRunner.Run<LinqBenchmarks>();
-            BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
-            BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
-            BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
-            BenchmarkRunner.Run<Json_ToString<MyEventsListerViewModel>>();
+            //BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
+            //BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
+            //BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
+            //BenchmarkRunner.Run<Json_ToString<MyEventsListerViewModel>>();
 #endif
 #if DEBUG
             RunWhere1($"\n\n Where 1 \n");
@@ -134,12 +134,12 @@ namespace CSharpBenchmark
             Console.WriteLine($"For: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqForeachSortedX();
+            result = linqBenchmarks.Where2LinqForSortedX();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqForeachSortedX();
+                result = linqBenchmarks.Where2LinqForSortedX();
             rel.Stop();
-            Console.WriteLine($"Foreach sorted:  {rel.ElapsedMilliseconds} - {result.Count} lines");
+            Console.WriteLine($"For sorted:  {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
             result = linqBenchmarks.Where2LinqKeyedSortedX();
