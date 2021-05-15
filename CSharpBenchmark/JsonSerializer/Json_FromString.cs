@@ -36,5 +36,12 @@ namespace CSharpBenchmark.JsonSerializer
         [BenchmarkCategory(Categories.ThirdParty)]
         [Benchmark(Description = "Utf8Json")]
         public T Utf8Json_() => Utf8Json.JsonSerializer.Deserialize<T>(serialized);
+
+        [GlobalSetup(Target = nameof(SystemTextJson_))]
+        public void SerializeSystemTextJsons_() => serialized = System.Text.Json.JsonSerializer.Serialize(DataGenerator.Generate<T>());
+
+        [BenchmarkCategory(Categories.Libraries)]
+        [Benchmark(Description = "SystemTextJson")]
+        public T SystemTextJson_() => System.Text.Json.JsonSerializer.Deserialize<T>(serialized);
     }
 }

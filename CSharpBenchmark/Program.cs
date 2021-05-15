@@ -14,8 +14,8 @@ namespace CSharpBenchmark
         {
 #if !DEBUG
             //BenchmarkRunner.Run<LinqBenchmarks>();
-            //BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
-            //BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
+            BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
+            BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
             BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
             BenchmarkRunner.Run<Json_ToString<MyEventsListerViewModel>>();
 #endif
