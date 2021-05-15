@@ -13,11 +13,11 @@ namespace CSharpBenchmark
         static void Main(string[] args)
         {
 #if !DEBUG
-            BenchmarkRunner.Run<LinqBenchmarks>();
+            //BenchmarkRunner.Run<LinqBenchmarks>();
             //BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
             //BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
-            //BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
-            //BenchmarkRunner.Run<Json_ToString<MyEventsListerViewModel>>();
+            BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
+            BenchmarkRunner.Run<Json_ToString<MyEventsListerViewModel>>();
 #endif
 #if DEBUG
             RunWhere1($"\n\n Where 1 \n");
