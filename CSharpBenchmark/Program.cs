@@ -13,7 +13,7 @@ namespace CSharpBenchmark
         static void Main(string[] args)
         {
 #if !DEBUG
-            //BenchmarkRunner.Run<LinqBenchmarks>();
+            BenchmarkRunner.Run<LinqBenchmarks>();
             BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
             BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
             BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
@@ -84,19 +84,27 @@ namespace CSharpBenchmark
             rel.Stop();
             Console.WriteLine($"Foreach sorted:  {rel.ElapsedMilliseconds} - {result.Count} lines");
 
-            // warmup
-            result = linqBenchmarks.Where1LinqKeyedX();
-            rel = Stopwatch.StartNew();
-            for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqKeyedX();
-            rel.Stop();
-            Console.WriteLine($"Dictionary: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
+            //// warmup
+            //result = linqBenchmarks.Where1LinqKeyedX();
+            //rel = Stopwatch.StartNew();
+            //for (int i = 0; i < repetitions; i++)
+            //    result = linqBenchmarks.Where1LinqKeyedX();
+            //rel.Stop();
+            //Console.WriteLine($"Dictionary: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
+
+            //// warmup
+            //result = linqBenchmarks.Where1LinqPositionalX();
+            //rel = Stopwatch.StartNew();
+            //for (int i = 0; i < repetitions; i++)
+            //    result = linqBenchmarks.Where1LinqPositionalX();
+            //rel.Stop();
+            //Console.WriteLine($"Array: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where1LinqPositionalX();
+            result = linqBenchmarks.Where1LinqForVectorizedX();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqPositionalX();
+                result = linqBenchmarks.Where1LinqForVectorizedX();
             rel.Stop();
             Console.WriteLine($"Array: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
         }
@@ -141,30 +149,38 @@ namespace CSharpBenchmark
             rel.Stop();
             Console.WriteLine($"For sorted:  {rel.ElapsedMilliseconds} - {result.Count} lines");
 
-            // warmup
-            result = linqBenchmarks.Where2LinqKeyedSortedX();
-            rel = Stopwatch.StartNew();
-            for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqKeyedSortedX();
-            rel.Stop();
-            Console.WriteLine($"Dictionary: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
+            //// warmup
+            //result = linqBenchmarks.Where2LinqKeyedSortedX();
+            //rel = Stopwatch.StartNew();
+            //for (int i = 0; i < repetitions; i++)
+            //    result = linqBenchmarks.Where2LinqKeyedSortedX();
+            //rel.Stop();
+            //Console.WriteLine($"Dictionary: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
+
+            //// warmup
+            //result = linqBenchmarks.Where2LinqPositionalSortedX();
+            //rel = Stopwatch.StartNew();
+            //for (int i = 0; i < repetitions; i++)
+            //    result = linqBenchmarks.Where2LinqPositionalSortedX();
+            //rel.Stop();
+            //Console.WriteLine($"Array: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqPositionalSortedX();
-            rel = Stopwatch.StartNew();
-            for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqPositionalSortedX();
-            rel.Stop();
-            Console.WriteLine($"Array: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
+            //result = linqBenchmarks.Where2LinqPositionalSortedVectorizedX();
+            //rel = Stopwatch.StartNew();
+            //for (int i = 0; i < repetitions; i++)
+            //    result = linqBenchmarks.Where2LinqPositionalSortedVectorizedX();
+            //rel.Stop();
+            //Console.WriteLine($"Array vectorized:{rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqPositionalSortedVectorizedX();
+            result = linqBenchmarks.Where2LinqForVectorizedX();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqPositionalSortedVectorizedX();
+                result = linqBenchmarks.Where2LinqForVectorizedX();
             rel.Stop();
             Console.WriteLine($"Array vectorized:{rel.ElapsedMilliseconds} - {result.Count} lines");
-
+            
         }
 
         private static void RunJsonFromStream(string methodName)

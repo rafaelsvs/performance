@@ -13,6 +13,7 @@ namespace CSharpBenchmark.Linq
         private static Lazy<Dictionary<int, ImmutableArray<ReadOnlyProposal>>> keyedSortedProposals = new Lazy<Dictionary<int, ImmutableArray<ReadOnlyProposal>>>(CreateKeyedSortedProposal);
         private static Lazy<ImmutableArray<ReadOnlyProposal>[]> positionalSortedProposals = new Lazy<ImmutableArray<ReadOnlyProposal>[]>(CreatePositionalSortedProposal);
         private static Lazy<ProposalResult[]> positionalSortedVectorizedProposals = new Lazy<ProposalResult[]>(CreatePositionalSortedVectorizedProposal);
+        private static Lazy<ProposalResult> sortedVectorizedProposals = new Lazy<ProposalResult>(CreateSortedVectorizedProposal);
 
         private static List<Proposal> CreateProposal()
         {
@@ -179,10 +180,22 @@ namespace CSharpBenchmark.Linq
             return result;
         }
 
+        private static ProposalResult CreateSortedVectorizedProposal()
+        {
+            var readonlyProposals = CreateProposal()
+                .Select(p => new ReadOnlyProposal(p))
+                .OrderBy(p => p.InsuranceId)
+                .ThenByDescending(p => p.NetPremium)
+                .ToArray();
+
+            return new ProposalResult(readonlyProposals);
+        }
+
         public static List<Proposal> GetInsurances() => proposals.Value;
         public static List<ReadOnlyProposal> GetSortedInsurances() => sortedProposals.Value;
         public static Dictionary<int, ImmutableArray<ReadOnlyProposal>> GetKeyedSortedInsurances() => keyedSortedProposals.Value;
         public static ImmutableArray<ReadOnlyProposal>[] GetPositionalSortedInsurances() => positionalSortedProposals.Value;
         public static ProposalResult[] GetPositionalSortedVectorizedInsurances() => positionalSortedVectorizedProposals.Value;
+        public static ProposalResult GetSortedVectorizedInsurances() => sortedVectorizedProposals.Value;
     }
 }
