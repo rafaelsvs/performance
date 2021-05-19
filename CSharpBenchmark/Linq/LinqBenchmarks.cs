@@ -51,7 +51,7 @@ namespace CSharpBenchmark.Linq
         public List<Proposal> Where1LinqForX()
         {
             List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = new List<Proposal>();
+            List<Proposal> result = new List<Proposal>(64); // cheating
             for (int i = 0; i < proposals.Count; i++)
             {
                 Proposal p = proposals[i];
@@ -65,7 +65,7 @@ namespace CSharpBenchmark.Linq
         public List<Proposal> Where1LinqUnrolledForX()
         {
             List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = new List<Proposal>();
+            List<Proposal> result = new List<Proposal>(64); // cheating
             int i = 0;
             for (; i <= proposals.Count - 4; i += 4)
             {
@@ -130,7 +130,7 @@ namespace CSharpBenchmark.Linq
         public List<ReadOnlyProposal> Where1LinqForeachSortedX()
         {
             List<ReadOnlyProposal> proposals = ProposalBuilder.GetSortedInsurances();
-            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
+            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>(64); // cheating
 
             foreach (ReadOnlyProposal p in proposals)
             {
@@ -196,7 +196,7 @@ namespace CSharpBenchmark.Linq
         public List<Proposal> Where2LinqForX()
         {
             List<Proposal> proposals = ProposalBuilder.GetInsurances();
-            List<Proposal> result = new List<Proposal>();
+            List<Proposal> result = new List<Proposal>(64); // cheating
 
             for (int i = 0; i < proposals.Count; i++)
             {
@@ -211,7 +211,7 @@ namespace CSharpBenchmark.Linq
         public List<ReadOnlyProposal> Where2LinqForSortedX()
         {
             List<ReadOnlyProposal> proposals = ProposalBuilder.GetSortedInsurances();
-            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>();
+            List<ReadOnlyProposal> result = new List<ReadOnlyProposal>(64); // cheating
 
             for (int i = 0; i < proposals.Count; i++)
             {

@@ -18,13 +18,14 @@ namespace CSharpBenchmark.Linq
 
 		public static unsafe Vector128<int> AsInt(this Vector256<long> l)
 		{
-			// for vector (0, 1, 0, 2, 0, 3, 0, 4) -> (1, 2, 1, 2, 3, 4, 3, 4) 
+			// (0, 1, 0, 2, 0, 3, 0, 4) -> (1, 2, 1, 2, 3, 4, 3, 4) 
 			var v = Avx2.Shuffle(
 				l.AsInt32(),
 				136
 			);
 			var content = stackalloc int[8];
 			Avx2.Store(content, v);
+			// (1, 2, 1, 2, 3, 4, 3, 4)  -> (1, 2, 3, 4) 
 			return Avx.LoadDquVector128(content + 2);
 		}
 	}
