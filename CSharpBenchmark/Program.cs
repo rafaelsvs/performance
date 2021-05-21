@@ -13,7 +13,8 @@ namespace CSharpBenchmark
         static void Main(string[] args)
         {
 #if !DEBUG
-            BenchmarkRunner.Run<LinqBenchmarks>();
+            BenchmarkRunner.Run<LinqBenchmarksWhere1>();
+            BenchmarkRunner.Run<LinqBenchmarksWhere2>();
             BenchmarkRunner.Run<Json_FromStream<MyEventsListerViewModel>>();
             BenchmarkRunner.Run<Json_FromString<MyEventsListerViewModel>>();
             BenchmarkRunner.Run<Json_ToStream<MyEventsListerViewModel>>();
@@ -39,48 +40,48 @@ namespace CSharpBenchmark
         private static void RunWhere1(string methodName)
         {
             int repetitions = 1000000;
-            LinqBenchmarks linqBenchmarks = new LinqBenchmarks();
+            LinqBenchmarksWhere1 linqBenchmarks = new LinqBenchmarksWhere1();
             Stopwatch rel;
             ICollection result = null;
             Console.WriteLine(methodName);
 
             // warmup
-            result = linqBenchmarks.Where1LinqQueryX();
+            result = linqBenchmarks.LinqQuery();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqQueryX();
+                result = linqBenchmarks.LinqQuery();
             rel.Stop();
             Console.WriteLine($"Linq: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where1LinqLambdaX();
+            result = linqBenchmarks.Lambda();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqLambdaX();
+                result = linqBenchmarks.Lambda();
             rel.Stop();
             Console.WriteLine($"Lambda: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where1LinqForX();
+            result = linqBenchmarks.For();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqForX();
+                result = linqBenchmarks.For();
             rel.Stop();
             Console.WriteLine($"For: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where1LinqUnrolledForX();
+            result = linqBenchmarks.UnrolledFor();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqUnrolledForX();
+                result = linqBenchmarks.UnrolledFor();
             rel.Stop();
             Console.WriteLine($"Unrolled for: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where1LinqForeachSortedX();
+            result = linqBenchmarks.ForeachSorted();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqForeachSortedX();
+                result = linqBenchmarks.ForeachSorted();
             rel.Stop();
             Console.WriteLine($"Foreach sorted:  {rel.ElapsedMilliseconds} - {result.Count} lines");
 
@@ -101,10 +102,10 @@ namespace CSharpBenchmark
             //Console.WriteLine($"Array: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where1LinqForVectorizedX();
+            result = linqBenchmarks.ForVectorized();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where1LinqForVectorizedX();
+                result = linqBenchmarks.ForVectorized();
             rel.Stop();
             Console.WriteLine($"Array: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
         }
@@ -112,40 +113,40 @@ namespace CSharpBenchmark
         private static void RunWhere2(string methodName)
         {
             int repetitions = 1000000;
-            LinqBenchmarks linqBenchmarks = new LinqBenchmarks();
+            LinqBenchmarksWhere2 linqBenchmarks = new LinqBenchmarksWhere2();
             Stopwatch rel;
             ICollection result;
             Console.WriteLine(methodName);
 
             // warmup
-            result = linqBenchmarks.Where2LinqQueryX();
+            result = linqBenchmarks.LinqQuery();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqQueryX();
+                result = linqBenchmarks.LinqQuery();
             rel.Stop();
             Console.WriteLine($"Linq: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqLambdaX();
+            result = linqBenchmarks.Lambda();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqLambdaX();
+                result = linqBenchmarks.Lambda();
             rel.Stop();
             Console.WriteLine($"Lambda: \t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqForX();
+            result = linqBenchmarks.For();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqForX();
+                result = linqBenchmarks.For();
             rel.Stop();
             Console.WriteLine($"For: \t\t {rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqForSortedX();
+            result = linqBenchmarks.ForSorted();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqForSortedX();
+                result = linqBenchmarks.ForSorted();
             rel.Stop();
             Console.WriteLine($"For sorted:  {rel.ElapsedMilliseconds} - {result.Count} lines");
 
@@ -174,10 +175,10 @@ namespace CSharpBenchmark
             //Console.WriteLine($"Array vectorized:{rel.ElapsedMilliseconds} - {result.Count} lines");
 
             // warmup
-            result = linqBenchmarks.Where2LinqForVectorizedX();
+            result = linqBenchmarks.ForVectorized();
             rel = Stopwatch.StartNew();
             for (int i = 0; i < repetitions; i++)
-                result = linqBenchmarks.Where2LinqForVectorizedX();
+                result = linqBenchmarks.ForVectorized();
             rel.Stop();
             Console.WriteLine($"Array vectorized:{rel.ElapsedMilliseconds} - {result.Count} lines");
             

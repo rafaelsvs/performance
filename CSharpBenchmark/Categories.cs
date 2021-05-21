@@ -9,7 +9,8 @@ namespace CSharpBenchmark
         public const string ThirdParty = "ThirdParty";
         public const string Libraries = "Libraries";
 
-        public const string Linq = "Linq";
+        public const string LinqWhere1 = "LinqWhere1";
+        public const string LinqWhere2 = "LinqWhere2";
 
         public const string JsonSerializer = "JsonSerializer";
     }
