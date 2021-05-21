@@ -1,6 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.Buffers;
+using System.IO;
+using System.IO.Pipelines;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 
 namespace CSharpBenchmark.JsonSerializer
@@ -110,6 +114,28 @@ namespace CSharpBenchmark.JsonSerializer
         {
             memoryStream.Position = 0;
             return (T)dataContractJsonSerializer.ReadObject(memoryStream);
+        }
+
+        [GlobalSetup(Target = nameof(SystemTextJsonSerializer_))]
+        public void SetupSystemTextJsonSerializer_()
+        {
+            value = DataGenerator.Generate<T>();
+
+            // the stream is pre-allocated, we don't want the benchmarks to include stream allocaton cost
+            memoryStream = new MemoryStream(capacity: short.MaxValue);
+            memoryStream.Position = 0;
+            using (var writer = new System.Text.Json.Utf8JsonWriter(memoryStream))
+                System.Text.Json.JsonSerializer.Serialize(writer, value);
+        }
+
+        [BenchmarkCategory(Categories.Libraries)]
+        [Benchmark(Description = "SystemTextJson")]
+        public ValueTask<T> SystemTextJsonSerializer_()
+        {
+            memoryStream.Position = 0;
+            
+            // will have aditional overhead, System.Text.Json assumes that stream is async (IO)
+            return System.Text.Json.JsonSerializer.DeserializeAsync<T>(memoryStream);
         }
 
         [GlobalCleanup]

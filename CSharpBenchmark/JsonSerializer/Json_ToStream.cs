@@ -69,6 +69,15 @@ namespace CSharpBenchmark.JsonSerializer
             dataContractJsonSerializer.WriteObject(memoryStream, value);
         }
 
+        [BenchmarkCategory(Categories.Libraries)]
+        [Benchmark(Description = "SystemTextJson")]
+        public void SystemTextJson_()
+        {
+            memoryStream.Position = 0;
+            using (var writer = new System.Text.Json.Utf8JsonWriter(memoryStream))
+                System.Text.Json.JsonSerializer.Serialize(writer, value);
+        }
+
         [GlobalCleanup]
         public void Cleanup()
         {
